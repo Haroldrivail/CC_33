@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voter - Système de Vote Électronique</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="index.html" class="navbar-brand"> Vote Électronique </a>
+        <ul class="navbar-nav">
+          <li><a href="vote.html" class="active">Voter</a></li>
+          <li><a href="resultats.html">Résultats</a></li>
+        </ul>
+        <div class="navbar-user" id="user-nav"></div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div id="vote-section">
+        <div class="page-header">
+          <h1>Choisissez votre option</h1>
+          <p>
+            Cliquez sur une option pour la sélectionner, puis confirmez votre
+            vote
+          </p>
+        </div>
+
+        <div id="already-voted" class="alert alert-info hidden">
+          <span>✓</span>
+          <span>Vous avez déjà voté. Merci pour votre participation!</span>
+        </div>
+
+        <div id="options-container" class="grid grid-3"></div>
+
+        <div class="text-center mt-4" id="vote-button-container">
+          <button
+            id="vote-btn"
+            class="btn btn-primary btn-lg"
+            onclick="submitVote()"
+            disabled
+          >
+            ✓ Confirmer mon vote anonyme
+          </button>
+          <p class="text-muted mt-2">
+            Votre vote sera chiffré (RSA) et anonymisé. L'administrateur ne
+            pourra pas savoir si vous avez voté.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (!requireLogin()) return;
+
+        await loadStatistiques("stats-container");
+        await loadOptions("options-container", true);
+
+        // Vérifier si déjà voté pour ce vote (localement)
+        if (currentVoteId && session.hasVoted(currentVoteId)) {
+          document.getElementById("already-voted").classList.remove("hidden");
+          document
+            .getElementById("vote-button-container")
+            .classList.add("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administration - Système de Vote Électronique</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="admin-login" class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>Administration</h1>
+          <p>Accès réservé aux administrateurs</p>
+        </div>
+
+        <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="admin-username"
+              >Nom d'utilisateur</label
+            >
+            <input
+              type="text"
+              id="admin-username"
+              class="form-control"
+              placeholder="admin"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="admin-password">Mot de passe</label>
+            <input
+              type="password"
+              id="admin-password"
+              class="form-control"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">
+            Se connecter
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p><a href="index.html">← Retour à l'accueil</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="admin-dashboard" class="hidden">
+      <nav class="navbar">
+        <div class="navbar-container">
+          <a href="admin.html" class="navbar-brand"> Administration </a>
+          <ul class="navbar-nav">
+            <li><a href="index.html">Site public</a></li>
+          </ul>
+          <div class="navbar-user" id="user-nav"></div>
+        </div>
+      </nav>
+
+      <div class="container">
+        <div class="page-header">
+          <h1>Tableau de bord administrateur</h1>
+          <p>Gérez les votes, options et votants</p>
+        </div>
+
+        <div id="stats-container" class="grid grid-3 mb-4"></div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="switchAdminTab('votes')">
+            Votes
+          </button>
+          <button class="tab" onclick="switchAdminTab('options')">
+            Options
+          </button>
+          <button class="tab" onclick="switchAdminTab('electeurs')">
+            Votants
+          </button>
+        </div>
+
+        <div id="tab-votes" class="tab-content active">
+          <div class="card">
+            <div
+              class="card-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h2>Gestion des votes</h2>
+              <button class="btn btn-primary" onclick="showVoteModal()">
+                + Nouveau vote
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Titre</th>
+                      <th>Statut</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="votes-list"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-options" class="tab-content">
+          <div class="card">
+            <div
+              class="card-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h2>Gestion des options</h2>
+              <button class="btn btn-primary" onclick="showOptionModal()">
+                + Nouvelle option
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Libellé</th>
+                      <th>Vote</th>
+                      <th>Description</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="options-list"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-electeurs" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h2>Liste des votants</h2>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nom</th>
+                      <th>Email</th>
+                      <th>Inscription</th>
+                    </tr>
+                  </thead>
+                  <tbody id="electeurs-list"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="option-modal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Ajouter une option</h2>
+          <button class="modal-close" onclick="closeModal('option-modal')">
+            &times;
+          </button>
+        </div>
+        <form onsubmit="handleAddOption(event)">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="option-vote">Vote concerné</label>
+              <select id="option-vote" class="form-control" required>
+                <option value="">Sélectionnez un vote...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="option-libelle">Libellé</label>
+              <input
+                type="text"
+                id="option-libelle"
+                class="form-control"
+                placeholder="Nom de la personne, du lieu, etc."
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="option-description"
+                >Description</label
+              >
+              <textarea
+                id="option-description"
+                class="form-control"
+                placeholder="Description de l'option..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline"
+              onclick="closeModal('option-modal')"
+            >
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="vote-modal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Créer un vote</h2>
+          <button class="modal-close" onclick="closeModal('vote-modal')">
+            &times;
+          </button>
+        </div>
+        <form onsubmit="handleAddVote(event)">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="vote-titre">Titre</label>
+              <input
+                type="text"
+                id="vote-titre"
+                class="form-control"
+                placeholder="Vote du délégué, du prochain restaurant..."
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vote-description"
+                >Description</label
+              >
+              <textarea
+                id="vote-description"
+                class="form-control"
+                placeholder="Description du vote..."
+              ></textarea>
+            </div>
+
+            <div class="alert alert-info">
+              <span
+                >Une paire de clés RSA sera automatiquement générée pour ce
+                vote</span
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline"
+              onclick="closeModal('vote-modal')"
+            >
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">Créer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+      // Vérifier si admin connecté
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (session.isAdmin()) {
+          showDashboard();
+        } else {
+          document.getElementById("admin-login").classList.remove("hidden");
+          document.getElementById("admin-dashboard").classList.add("hidden");
+        }
+      });
+
+      function showDashboard() {
+        document.getElementById("admin-login").classList.add("hidden");
+        document.getElementById("admin-dashboard").classList.remove("hidden");
+        loadDashboard();
+      }
+
+      async function loadDashboard() {
+        updateNavigation();
+        await loadStatistiques("stats-container");
+        await loadAdminVotes("votes-list");
+        await loadAdminOptions("options-list");
+        await loadAdminElecteurs("electeurs-list");
+      }
+
+      async function handleAdminLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById("admin-username").value;
+        const password = document.getElementById("admin-password").value;
+        const result = await loginAdmin(username, password);
+        if (result.success) {
+          showDashboard();
+        }
+      }
+
+      function switchAdminTab(tabName) {
+        document
+          .querySelectorAll(".tabs .tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((c) => c.classList.remove("active"));
+
+        event.target.classList.add("active");
+        document.getElementById("tab-" + tabName).classList.add("active");
+      }
+
+      async function showOptionModal() {
+        // Charger les votes disponibles
+        const r = await api("/api/votes");
+        const select = document.getElementById("option-vote");
+        select.innerHTML = '<option value="">Sélectionnez un vote...</option>';
+        if (r.votes?.length) {
+          r.votes.forEach((v) => {
+            select.innerHTML += `<option value="${v.id}">${esc(v.titre)} (${
+              v.statut
+            })</option>`;
+          });
+        }
+        document.getElementById("option-modal").classList.add("active");
+      }
+
+      function showVoteModal() {
+        document.getElementById("vote-modal").classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      async function handleAddOption(e) {
+        e.preventDefault();
+        const voteId = document.getElementById("option-vote").value;
+        const libelle = document.getElementById("option-libelle").value;
+        const description = document.getElementById("option-description").value;
+
+        const result = await addOption(parseInt(voteId), libelle, description);
+        if (result.success) {
+          closeModal("option-modal");
+          e.target.reset();
+          await loadAdminOptions("options-list");
+        }
+      }
+
+      async function handleAddVote(e) {
+        e.preventDefault();
+        const titre = document.getElementById("vote-titre").value;
+        const description = document.getElementById("vote-description").value;
+        const result = await createVote(titre, description);
+        if (result.success) {
+          closeModal("vote-modal");
+          e.target.reset();
+          await loadAdminVotes("votes-list");
+        }
+      }
+
+      // Fermer modal en cliquant à l'extérieur
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) {
+            overlay.classList.remove("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
