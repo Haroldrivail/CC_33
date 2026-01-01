@@ -84,20 +84,44 @@
 
 ### Prérequis
 
-- **Python 3.10+**
-- **Bibliothèque sympy** (pour la vérification de primalité)
+- **Python 3.10+** (ou version plus récente)
+
+### Bibliothèques utilisées
+
+| Bibliothèque   | Type            | Utilisation                 |
+| -------------- | --------------- | --------------------------- |
+| `sqlite3`      | Standard Python | Base de données             |
+| `hashlib`      | Standard Python | Hachage SHA-256             |
+| `json`         | Standard Python | Format des données API      |
+| `http.server`  | Standard Python | Serveur web                 |
+| `socketserver` | Standard Python | Gestion des connexions      |
+| `random`       | Standard Python | Generation aleatoire        |
+| `string`       | Standard Python | Caracteres pour les salts   |
+| `base64`       | Standard Python | Encodage des votes chiffres |
+| `math`         | Standard Python | Calculs mathematiques       |
+| `sympy`        | **A installer** | Test de primalite pour RSA  |
 
 ### Installation
 
 ```bash
-# 1. Cloner ou télécharger le projet
+# 1. Telecharger ou cloner le projet
 cd CC_33
 
-# 2. Installer les dépendances
+# 2. Installer la seule dependance externe
 pip install sympy
 
-# 3. Lancer le serveur (initialise automatiquement la base de données)
+# 3. Lancer le serveur
 python server.py
+```
+
+### Lancer le projet
+
+```bash
+# Demarrer le serveur (cree automatiquement la base de donnees)
+python server.py
+
+# Le serveur demarre sur http://localhost:8000
+# Pour arreter le serveur : Ctrl + C
 ```
 
 ### Accès à l'application
